@@ -1,9 +1,13 @@
+import cloudinary from 'cloudinary';
+import dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
 import episodes from '../latoons/episodes.json' with { type: 'json' };
 import seasons from '../latoons/seasons.json' with { type: 'json' };
 import series from '../latoons/series.json' with { type: 'json' };
 
-import * as fs from 'fs';
-import * as path from 'path';
+dotenv.config();
+cloudinary.v2.config({});
 
 // Obtener el directorio actual usando import.meta.url
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -93,5 +97,13 @@ for (const serie of series) {
     publicDir,
     `${DATA_JSON?.serie?.slug}.json`,
   );
+
+  await cloudinary.v2.uploader.upload(filePath, {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+    folder: 'app/latoons/public',
+    resource_type: 'raw',
+  });
   fs.writeFileSync(filePath, JSON.stringify(DATA_JSON, null, 2), 'utf-8');
 }
